@@ -118,6 +118,7 @@ file_transafer()
      echo ""
      echo "  Above are the matching file."
      echo "  Please enter the complete path        [warning]"
+     echo ""
      echo -n "  File path : "
      read ftpath
        if [ -f $ftpath ]
@@ -125,6 +126,7 @@ file_transafer()
         echo "  You have selected $ftpath"
 	echo ""
 	ftpath_f
+	transfer_host
        else
         #echo "  File not found !"
         exit
@@ -138,6 +140,7 @@ file_transafer()
           echo "  You have selected $ftfull"
 	  echo ""
 	  ftfull_f
+	  transfer_host
          else
           echo "  File not found !"
           exit
@@ -157,10 +160,10 @@ echo "  gather_facts: no" >> $path/transfer.yml
 echo "" >> $path/transfer.yml
 echo "" >> $path/transfer.yml
 echo "  tasks:" >> $path/transfer.yml
-echo "         - name: Transfer file $pkg" >> $path/pkg.yml
-echo "           copy:"
-echo "            src:$ftpath"
-echo "            dest: /home/c2s"
+echo "         - name: Transfer file " >> $path/transfer.yml
+echo "           copy:" >> $path/transfer.yml
+echo "            src: $ftpath" >> $path/transfer.yml
+echo "            dest: /home/c2s" >> $path/transfer.yml
 }
 
 
@@ -175,19 +178,35 @@ echo "  gather_facts: no" >> $path/transfer.yml
 echo "" >> $path/transfer.yml
 echo "" >> $path/transfer.yml
 echo "  tasks:" >> $path/transfer.yml
-echo "         - name: Transfer file $pkg" >> $path/pkg.yml
-echo "           copy:"
-echo "            src:$ftfull"
-echo "            dest: /home/c2s"
+echo "         - name: Transfer file " >> $path/transfer.yml
+echo "           copy:" >> $path/transfer.yml
+echo "            src: $ftfull" >> $path/transfer.yml
+echo "            dest: /home/c2s" >> $path/transfer.yml
 }
 
+transfer_host()
+{
+echo -n "  Please enter the server ip you want to trigger : "
+read thip
+touch $path/hosts_transfer
+echo > $path/hosts_transfer
+echo "[hosts_transfer]" >> $path/hosts_transfer
+echo "" >> $path/hosts_transfer
+echo "$thip" >> $path/hosts_transfer
+echo -n "  Do you want to enter more ip's [y/n]? : "
+read thy
+if [ $thy = y ]
+then
+	echo "  Opening the file..."
+	sleep 1
+	vi $path/hosts_transfer
+	sleep 1
+	echo "  Proceeding..."
+else
+	echo "  Proceeding..."
+fi
 
-
-
-
-
-
-
+}
 
 
 
@@ -307,8 +326,8 @@ ansible-playbook -i hosts_pkg pkg.yml
 else
 if [ $ipt1 = 2 ]
 then
-	file_transafer
-
+file_transafer
+ansible-playbook -i hosts_transfer transfer.yml
 else
 echo "  Invalid Option !"
 echo "  Exiting..."
