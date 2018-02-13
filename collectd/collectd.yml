@@ -1,0 +1,16 @@
+---
+- hosts: qyuki
+  become: yes
+  gather_facts: no
+  
+
+  tasks:
+          #  - name: ecid
+          #   command: "curl http://169.254.169.254/latest/meta-data/instance-id"
+          # register: command_output
+
+          #  - name: collectd  conf file
+          #    template: src=collectd.conf dest=/etc/collectd.conf
+
+          # - name: restart collectd
+          # service: name=collectd state=restarted

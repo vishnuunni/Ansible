@@ -1,0 +1,3 @@
+- name: Shutdown Debian Based Systems
+  command: /sbin/shutdown -t now
+  when: ansible_os_family == "Debian"

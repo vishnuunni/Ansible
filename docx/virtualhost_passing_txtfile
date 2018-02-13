@@ -1,0 +1,5 @@
+#save the file as *.tpl
+
+
+- name: Change default Apache virtual host
+  template: src=*.tpl dest=/etc/apache2/sites-available/000-default.conf
