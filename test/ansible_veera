@@ -91,105 +91,8 @@ echo "" >> $path/pkg.yml
 echo "" >> $path/pkg.yml
 echo "  tasks:" >> $path/pkg.yml
 echo "         - name: Install $pkg" >> $path/pkg.yml
-echo "           apt: name=$pkg state=latest" >> $path/pkg.yml
+echo "           yum: name=$pkg state=latest" >> $path/pkg.yml
 }
-
-file_transafer()
-{
- echo ""
- echo "  You have selected to transfer file                   [OK]"
- echo ""
- echo -n "  Do you want to search for files [y/n] ? : "
- read ftinput
- if [ $ftinput = y  ]
-  then
-   echo ""
-   echo -n "  Please enter the filename to search : "
-   read ftinput2
-   echo ""
-   ftfind=`find /home/$whoami -name *$ftinput2* -not -path '*/\.*' 2>&1 | grep -v "Permission denied"`
-    if [ -z "$ftfind" ]
-    then
-     echo ""
-     echo "  No Match !"
-     exit
-     else
-     echo "$ftfind"
-     echo ""
-     echo "  Above are the matching file."
-     echo "  Please enter the complete path        [warning]"
-     echo -n "  File path : "
-     read ftpath
-       if [ -f $ftpath ]
-       then
-        echo "  You have selected $ftpath"
-	echo ""
-	ftpath_f
-       else
-        #echo "  File not found !"
-        exit
-       fi
-    fi
- else
-  echo -n "  Please enter the full path : "
-  read ftfull
-         if [ -f $ftfull ]
-         then
-          echo "  You have selected $ftfull"
-	  echo ""
-	  ftfull_f
-         else
-          echo "  File not found !"
-          exit
-         fi
- fi
-}
-
-ftpath_f()
-
-{
-touch $path/transfer.yml
-echo > $path/transfer.yml
-echo "---" >> $path/transfer.yml
-echo "- hosts: hosts_transfer" >> $path/transfer.yml
-echo "  become: yes" >> $path/transfer.yml
-echo "  gather_facts: no" >> $path/transfer.yml
-echo "" >> $path/transfer.yml
-echo "" >> $path/transfer.yml
-echo "  tasks:" >> $path/transfer.yml
-echo "         - name: Transfer file $pkg" >> $path/pkg.yml
-echo "           copy:"
-echo "            src:$ftpath"
-echo "            dest: /home/c2s"
-}
-
-
-ftfull_f()
-{
-touch $path/transfer.yml
-echo > $path/transfer.yml
-echo "---" >> $path/transfer.yml
-echo "- hosts: hosts_transfer" >> $path/transfer.yml
-echo "  become: yes" >> $path/transfer.yml
-echo "  gather_facts: no" >> $path/transfer.yml
-echo "" >> $path/transfer.yml
-echo "" >> $path/transfer.yml
-echo "  tasks:" >> $path/transfer.yml
-echo "         - name: Transfer file $pkg" >> $path/pkg.yml
-echo "           copy:"
-echo "            src:$ftfull"
-echo "            dest: /home/c2s"
-}
-
-
-
-
-
-
-
-
-
-
 
 #front----------
 #echo " ----------------------------------------"
@@ -210,27 +113,27 @@ echo "  Creating one...              [OK]"
 touch $path/ansible.cfg
 echo ""
 echo "[defaults]" >> $path/ansible.cfg
-echo "private_key_file = $home/c2s_ssh" >> $path/ansible.cfg
+echo "private_key_file = $home/id_rsa" >> $path/ansible.cfg
 echo "host_key_checking = False." >> $path/ansible.cfg
-echo "remote_user = c2s" >> $path/ansible.cfg
+echo "remote_user = veera" >> $path/ansible.cfg
 echo "become = True" >> $path/ansible.cfg
 echo "become_user = root" >> $path/ansible.cfg
 echo "  Done with configuration"
 fi
 
 sleep 1
-echo ""
-echo "  Checking for c2s_sshkey..."
-sleep 1
-if [ -f "$home/c2s_sshkey" ]
-then 
-echo "  Key found..."
-true
-else
-echo "  Updating key.."
-wget https://raw.githubusercontent.com/vishnuunni/wget/master/c2s_sshkey -P $home
-echo "  Key Updated"
-fi
+#echo ""
+#echo "  Checking for c2s_sshkey..."
+#sleep 1
+#if [ -f "$home/c2s_sshkey" ]
+#then 
+#echo "  Key found..."
+#true
+#else
+#echo "  Updating key.."
+#wget https://raw.githubusercontent.com/vishnuunni/wget/master/c2s_sshkey -P $home
+#echo "  Key Updated"
+#fi
 
 sleep 1
 echo ""
@@ -305,14 +208,9 @@ pkg_install
 ansible-playbook -i hosts_pkg pkg.yml
 
 else
-if [ $ipt1 = 2 ]
-then
-	file_transafer
-
-else
 echo "  Invalid Option !"
 echo "  Exiting..."
 echo ""
 exit
 fi
-fi
+
