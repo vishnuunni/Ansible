@@ -161,9 +161,10 @@ echo "" >> $path/transfer.yml
 echo "" >> $path/transfer.yml
 echo "  tasks:" >> $path/transfer.yml
 echo "         - name: Transfer file " >> $path/transfer.yml
-echo "           copy:" >> $path/transfer.yml
-echo "            src: $ftpath" >> $path/transfer.yml
-echo "            dest: /home/c2s" >> $path/transfer.yml
+#echo "           copy:" >> $path/transfer.yml
+#echo "            src: $ftpath" >> $path/transfer.yml
+#echo "            dest: /home/c2s" >> $path/transfer.yml
+echo "           template: src=$ftpath dest=/home/c2s"
 }
 
 
@@ -179,9 +180,10 @@ echo "" >> $path/transfer.yml
 echo "" >> $path/transfer.yml
 echo "  tasks:" >> $path/transfer.yml
 echo "         - name: Transfer file " >> $path/transfer.yml
-echo "           copy:" >> $path/transfer.yml
-echo "            src: $ftfull" >> $path/transfer.yml
-echo "            dest: /home/c2s" >> $path/transfer.yml
+#echo "           copy:" >> $path/transfer.yml
+#echo "            src: $ftfull" >> $path/transfer.yml
+#echo "            dest: /home/c2s" >> $path/transfer.yml
+echo "           template: src=$ftfull dest=/home/c2s"
 }
 
 transfer_host()
