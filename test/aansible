@@ -126,7 +126,7 @@ file_transafer()
          echo "  You have selected $ftpath"
 	 echo ""
 	 ftpath_f
-	 transfer_host
+ 	 transfer_host
         else
         #echo "  File not found !"
         exit
@@ -163,7 +163,7 @@ ftpath_f()
 #echo "           copy:" >> $path/transfer.yml
 #echo "            src: $ftpath" >> $path/transfer.yml
 #echo "            dest: /home/c2s" >> $path/transfer.yml
- echo "           template: src=$ftpath dest=/home/c2s"
+ echo "           template: src=$ftpath dest=/home/c2s" >> $path/transfer.yml
       }
 
 
@@ -184,7 +184,7 @@ ftfull_f()
 #echo "           copy:" >> $path/transfer.yml
 #echo "            src: $ftfull" >> $path/transfer.yml
 #echo "            dest: /home/c2s" >> $path/transfer.yml
- echo "           template: src=$ftfull dest=/home/c2s"
+ echo "           template: src=$ftfull dest=/home/c2s" >> $path/transfer.yml
 
       }
 
@@ -213,6 +213,146 @@ transfer_host()
  fi
 
       }
+
+script_transfer_host()
+
+      {
+
+ echo -n "  Please enter the server ip you want to trigger : "
+ read sthip
+ touch $path/hosts_script_transfer
+ echo > $path/hosts_script_transfer
+ echo "[hosts_script_transfer]" >> $path/hosts_script_transfer
+ echo "" >> $path/hosts_script_transfer
+ echo "$sthip" >> $path/hosts_script_transfer
+ echo -n "  Do you want to enter more ip's [y/n]? : "
+ read sthy
+ if [ $sthy = y ]
+  then
+   echo "  Opening the file..."
+   sleep 1
+   vi $path/hosts_script_transfer
+   sleep 1
+   echo "  Proceeding..."
+ else
+   echo "  Proceeding..."
+ fi
+
+      }
+
+ remote_script_x()
+      {
+ echo "" 
+ echo "  You have selected to execute script on remote server... "
+ echo ""
+ echo -n "  Do you want to search for files [y/n] ? : "
+ read scrinput
+ if [ $scrinput = y  ]
+ then
+ echo ""
+ echo -n "  Please enter the filename to search : "
+ read scrinput2
+ echo ""
+ scrfind=`find /home/$whoami -name *$scrinput2* -not -path '*/\.*' 2>&1 | grep -v "Permission denied"`
+ if [ -z "$scrfind" ]
+ then
+ echo ""
+ echo "  No Match !"
+ exit
+ else
+ echo "$scrfind"
+ echo ""
+ echo "  Above are the matching file."
+ echo "  Please enter the complete path        [warning]"
+ echo ""
+ echo -n "  File path : "
+ read scrpath
+ if [ -f $scrpath ]
+ then
+ echo "  You have selected $scrpath"
+ echo ""
+ echo "  Creating playbook..."
+ echo ""
+ touch $path/script_transfer.yml
+ echo > $path/script_transfer.yml
+ echo "---" >> script_transfer.yml
+ echo "- hosts: hosts_script_transfer" >> $path/script_transfer.yml
+ echo "  become: yes" >> $path/script_transfer.yml
+ echo "  gather_facts: no" >> $path/script_transfer.yml
+ echo "" >> $path/script_transfer.yml
+ echo "" >> $path/script_transfer.yml
+ echo "  tasks:" >> $path/script_transfer.yml
+ echo "         - name: Transfer file " >> $path/script_transfer.yml
+ echo "           template: src=$scrpath dest=/home/c2s mode=0755" >> $path/script_transfer.yml
+ echo "         - name: Executing as script" >> $path/script_transfer.yml
+ echo -n "   Please name this script as : "
+ read scriptname
+ echo "           command: sh /home/c2s/$scriptname" >> $path/script_transfer.yml
+ script_transfer_host
+ else
+ #echo "  File not found !"
+ exit
+ fi
+ fi
+ else
+ echo -n "  Please enter the full path : "
+ read scrfull
+ if [ -f $scrfull ]
+ then
+ echo "  You have selected $scrfull"
+ echo ""
+ echo "  Creating playbook..."
+ echo ""
+ touch $path/script_transfer.yml
+ echo > $path/script_transfer.yml
+ echo "---" >> script_transfer.yml
+ echo "- hosts: hosts_script_transfer" >> $path/script_transfer.yml
+ echo "  become: yes" >> $path/script_transfer.yml
+ echo "  gather_facts: no" >> $path/script_transfer.yml
+ echo "" >> $path/script_transfer.yml
+ echo "" >> $path/script_transfer.yml
+ echo "  tasks:" >> $path/script_transfer.yml
+ echo "         - name: Transfer file " >> $path/script_transfer.yml
+ echo "           template: src=$scrfull dest=/home/c2s mode=0755" >> $path/script_transfer.yml
+ echo "         - name: Executing as script" >> $path/script_transfer.yml
+ echo -n "   Please name this script as : "
+ read scriptname
+ echo "           command: sh /home/c2s/$scriptname" >> $path/script_transfer.yml
+ script_transfer_host
+ else
+ echo "  File not found !"
+ exit
+ fi
+ fi
+
+ }
+
+# echo "  Creating playbook..."
+# echo ""
+# touch $path/script_transfer.yml
+# echo > $path/script_transfer.yml
+# echo "---" >> script_transfer.yml
+# echo "- hosts: hosts_script_transfer" >> $path/script_transfer.yml
+# echo "  become: yes" >> $path/script_transfer.yml
+# echo "  gather_facts: no" >> $path/script_transfer.yml
+# echo "" >> $path/script_transfer.yml
+# echo "" >> $path/script_transfer.yml
+# echo "  tasks:" >> $path/script_transfer.yml
+# echo "         - name: Transfer file " >> $path/script_transfer.yml
+# echo "           template: src=$scrpath dest=/home/c2s mode=0755" >> $path/script_transfer.yml
+# echo "         - name: Executing as script" >> $path/script_transfer.yml
+# echo -n "   Please name this script as : "
+# read scriptname
+# echo "           command: sh /home/c2s/$scriptname" >> $path/script_transfer.yml
+#else
+
+
+
+
+
+
+
+
 
 
 
@@ -335,9 +475,14 @@ ansible-playbook -i hosts_pkg pkg.yml
      file_transafer
      ansible-playbook -i hosts_transfer transfer.yml
     else
-     echo "  Invalid Option !"
-     echo "  Exiting..."
-     echo ""
-     exit
+     if [ $ipt1 = 3 ] 
+      then
+       remote_script_x
+       ansible-playbook -i hosts_script_transfer script_transfer.yml
+      else
+       echo "  Invalid Option !"
+       echo "  Exiting..."
+       echo ""
+       exit
+      fi
    fi
- fi
