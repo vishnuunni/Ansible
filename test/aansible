@@ -34,40 +34,41 @@ f1name=ansible.cfg
 f2name=hosts_pkg
 f3name=pkg.yml
         
- if [ -f "$file1" ]
-  then
-   true
-  else
-   echo "  [warning: $f1name not found]"
-   echo "  Updating $f1name"
-   echo ""
-   wget https://raw.githubusercontent.com/vishnuunni/wget/master/ansible.cfg -P $path
-   echo "  [warning: Updated $f1name]"
- fi
+# if [ -f "$file1" ]
+#  then
+#   true
+#  else
+#   echo "  [warning: $f1name not found]"
+#   echo "  Updating $f1name"
+#   echo ""
+   #touch $path/ansible.cfg
+#   wget https://raw.githubusercontent.com/vishnuunni/wget/master/ansible.cfg -P $path
+#   echo "  [warning: Updated $f1name]"
+# fi
 
- if [ -f "$file2" ]
-  then
-   true
-  else
-   echo "  [warning: $f2name not found]"
-   echo "  Updating $f2name"
-   echo ""
-   wget https://raw.githubusercontent.com/vishnuunni/wget/master/hosts_pkg -P $path
-   echo ""
-   echo "  [warning: Updated $f2name]"
- fi
+# if [ -f "$file2" ]
+#  then
+#   true
+#  else
+#   echo "  [warning: $f2name not found]"
+#   echo "  Updating $f2name"
+#   echo ""
+#   wget https://raw.githubusercontent.com/vishnuunni/wget/master/hosts_pkg -P $path
+#   echo ""
+#   echo "  [warning: Updated $f2name]"
+# fi
 
- if [ -f "$file3" ]
-  then
-   true
-  else
-   echo "  [warning: $f3name not found]"
-   echo "  Updating $f3name"
-   echo ""
-   wget https://raw.githubusercontent.com/vishnuunni/wget/master/pkg.yml -P $path
-   echo ""
-   echo "  [warning: Updated $f3name]"
- fi
+# if [ -f "$file3" ]
+#  then
+#   true
+#  else
+#   echo "  [warning: $f3name not found]"
+#   echo "  Updating $f3name"
+#   echo ""
+#   wget https://raw.githubusercontent.com/vishnuunni/wget/master/pkg.yml -P $path
+#   echo ""
+#   echo "  [warning: Updated $f3name]"
+# fi
 
  if [[ (-f "$file1" && -f "$file2" && -f "$file3") ]];
   then
@@ -119,7 +120,7 @@ file_transafer()
       echo "  Above are the matching file."
       echo "  Please enter the complete path        [warning]"
       echo ""
-      echo -n "  File path : "
+      echo -n "  File path (complete path) : "
       read ftpath
        if [ -f $ftpath ]
         then
@@ -222,7 +223,7 @@ script_transfer_host()
  read sthip
  touch $path/hosts_script_transfer
  echo > $path/hosts_script_transfer
- echo "[hosts_script_transfer]" >> $path/hosts_script_transfer
+ echo "[hosts_script_transfer]" >> $path/hosts_script_transfer 
  echo "" >> $path/hosts_script_transfer
  echo "$sthip" >> $path/hosts_script_transfer
  echo -n "  Do you want to enter more ip's [y/n]? : "
@@ -248,53 +249,57 @@ script_transfer_host()
  echo -n "  Do you want to search for files [y/n] ? : "
  read scrinput
  if [ $scrinput = y  ]
- then
- echo ""
- echo -n "  Please enter the filename to search : "
- read scrinput2
- echo ""
- scrfind=`find /home/$whoami -name *$scrinput2* -not -path '*/\.*' 2>&1 | grep -v "Permission denied"`
- if [ -z "$scrfind" ]
- then
- echo ""
- echo "  No Match !"
- exit
- else
- echo "$scrfind"
- echo ""
- echo "  Above are the matching file."
- echo "  Please enter the complete path        [warning]"
- echo ""
- echo -n "  File path : "
- read scrpath
- if [ -f $scrpath ]
- then
- echo "  You have selected $scrpath"
- echo ""
- echo "  Creating playbook..."
- echo ""
- touch $path/script_transfer.yml
- echo > $path/script_transfer.yml
- echo "---" >> script_transfer.yml
- echo "- hosts: hosts_script_transfer" >> $path/script_transfer.yml
- echo "  become: yes" >> $path/script_transfer.yml
- echo "  gather_facts: no" >> $path/script_transfer.yml
- echo "" >> $path/script_transfer.yml
- echo "" >> $path/script_transfer.yml
- echo "  tasks:" >> $path/script_transfer.yml
- echo "         - name: Transfer file " >> $path/script_transfer.yml
- echo "           template: src=$scrpath dest=/home/c2s mode=0755" >> $path/script_transfer.yml
- echo "         - name: Executing as script" >> $path/script_transfer.yml
- echo -n "   Please name this script as : "
- read scriptname
- echo "           command: sh /home/c2s/$scriptname" >> $path/script_transfer.yml
- script_transfer_host
- else
+  then
+  # echo ""
+   echo -n "  Please enter the filename to search : "
+   read scrinput2
+   echo ""
+   scrfind=`find /home/$whoami -name *$scrinput2* -not -path '*/\.*' 2>&1 | grep -v "Permission denied"`
+   if [ -z "$scrfind" ]
+    then
+     echo ""
+     echo "  No Match !"
+     exit
+   else
+    echo "$scrfind"
+    echo ""
+    echo "  Above are the matching file."
+    echo "  Please enter the complete path        [warning]"
+    echo ""
+    echo -n "  File path (complete path) : "
+    read scrpath
+    if [ -f $scrpath ]
+     then
+      echo "  You have selected $scrpath"
+      echo ""
+      echo "  Creating playbook..."
+      echo ""
+      touch $path/script_transfer.yml
+      echo > $path/script_transfer.yml
+      echo "---" >> $path/script_transfer.yml
+      echo "- hosts: hosts_script_transfer" >> $path/script_transfer.yml 
+      echo "  become: yes" >> $path/script_transfer.yml
+      echo "  gather_facts: no" >> $path/script_transfer.yml
+      echo "" >> $path/script_transfer.yml
+      echo "" >> $path/script_transfer.yml
+      echo "  tasks:" >> $path/script_transfer.yml
+      echo "         - name: Transfer file " >> $path/script_transfer.yml
+      echo -n "  Name this script in destination as : "
+      read scriptname
+      echo "           template: src=$scrpath dest=/home/c2s/$scriptname mode=0755" >> $path/script_transfer.yml
+      echo "" >> $path/script_transfer.yml
+      echo "" >> $path/script_transfer.yml
+      echo "         - name: Executing as script" >> $path/script_transfer.yml
+     # echo -n "   Please name this script as : "
+     # read scriptname
+      echo "           command: sh /home/c2s/$scriptname" >> $path/script_transfer.yml
+      script_transfer_host
+     else
  #echo "  File not found !"
- exit
- fi
- fi
- else
+     exit
+    fi
+   fi
+   else
  echo -n "  Please enter the full path : "
  read scrfull
  if [ -f $scrfull ]
@@ -305,7 +310,7 @@ script_transfer_host()
  echo ""
  touch $path/script_transfer.yml
  echo > $path/script_transfer.yml
- echo "---" >> script_transfer.yml
+ echo "---" >> $path/script_transfer.yml
  echo "- hosts: hosts_script_transfer" >> $path/script_transfer.yml
  echo "  become: yes" >> $path/script_transfer.yml
  echo "  gather_facts: no" >> $path/script_transfer.yml
@@ -313,12 +318,16 @@ script_transfer_host()
  echo "" >> $path/script_transfer.yml
  echo "  tasks:" >> $path/script_transfer.yml
  echo "         - name: Transfer file " >> $path/script_transfer.yml
- echo "           template: src=$scrfull dest=/home/c2s mode=0755" >> $path/script_transfer.yml
- echo "         - name: Executing as script" >> $path/script_transfer.yml
- echo -n "   Please name this script as : "
+ echo -n "  Name this script in destination as : "
  read scriptname
+ echo "           template: src=$scrfull dest=/home/c2s/$scriptname mode=0755" >> $path/script_transfer.yml
+ echo "" >> $path/script_transfer.yml
+ echo "" >> $path/script_transfer.yml
+ echo "         - name: Executing as script" >> $path/script_transfer.yml
+# echo -n "  Please name this script as : "
+# read scriptname
  echo "           command: sh /home/c2s/$scriptname" >> $path/script_transfer.yml
- script_transfer_host
+ script_transfer_host 
  else
  echo "  File not found !"
  exit
@@ -370,12 +379,13 @@ script_transfer_host()
    true
   else
    mkdir $path
+   cd $path
    echo "  Ansible.cfg not found !      [warning]"
    echo "  Creating one...              [OK]" 
    touch $path/ansible.cfg
    echo ""
    echo "[defaults]" >> $path/ansible.cfg
-   echo "private_key_file = $home/c2s_ssh" >> $path/ansible.cfg
+   echo "private_key_file = $home/c2s_sshkey" >> $path/ansible.cfg
    echo "host_key_checking = False." >> $path/ansible.cfg
    echo "remote_user = c2s" >> $path/ansible.cfg
    echo "become = True" >> $path/ansible.cfg
@@ -401,14 +411,14 @@ script_transfer_host()
  echo ""
  echo "  1. Package Install"
  echo "  2. File Transfer"
- echo "  3. <none>"
+ echo "  3. Script execution"
  echo ""
  echo -n "  Enter an option : "
  read ipt1
  if [ $ipt1 = 1 ]
   then
    echo "  Package install selected                                                     [OK]"
-   check
+  # check
    echo ""
    echo -n "  Enter the package name : "
    read pkg
@@ -467,6 +477,7 @@ script_transfer_host()
  fi
 
 pkg_install
+check
 ansible-playbook -i hosts_pkg pkg.yml
 
  else
@@ -477,6 +488,7 @@ ansible-playbook -i hosts_pkg pkg.yml
     else
      if [ $ipt1 = 3 ] 
       then
+
        remote_script_x
        ansible-playbook -i hosts_script_transfer script_transfer.yml
       else
@@ -485,4 +497,5 @@ ansible-playbook -i hosts_pkg pkg.yml
        echo ""
        exit
       fi
+   fi
    fi
