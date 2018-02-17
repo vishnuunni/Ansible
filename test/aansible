@@ -8,6 +8,9 @@
 whoami=`whoami`
 path=/home/$whoami/Ansible_automation
 home=/home/$whoami
+textreset=$(tput sgr0)
+red=$(tput setaf 1)
+green=`tput setaf 2`
 
  echo ""
 #sudo chmod +x aansible
@@ -368,8 +371,8 @@ script_transfer_host()
 #front----------
 #echo " ----------------------------------------"
  echo ""
- echo "     Welcome : $whoami"
- sleep 1
+ echo "     Hai Welcome ${green} $whoami ;) ${textreset}"
+ sleep 3
  echo ""
  echo ""
  echo "  Checking for Ansible configurations"
