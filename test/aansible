@@ -377,6 +377,7 @@ script_transfer_host()
  if [ -f "$path/ansible.cfg" ]
   then
    true
+   cd $path
   else
    mkdir $path
    cd $path
@@ -409,7 +410,9 @@ script_transfer_host()
 
  sleep 1
  echo ""
- echo "  1. Package Install"
+ echo "  These are the option :-"
+ echo ""
+ echo "  1. Package Installation"
  echo "  2. File Transfer"
  echo "  3. Script execution"
  echo ""
@@ -437,6 +440,7 @@ script_transfer_host()
  if [ -d "$path" ]
   then
    true
+   cd $path
   else
    mkdir $path
  fi
