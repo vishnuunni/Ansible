@@ -413,7 +413,7 @@ script_transfer_host()
 
  sleep 1
  echo ""
- echo "  These are the option :-"
+ echo "  These are the options :-"
  echo ""
  echo "  1. Package Installation"
  echo "  2. File Transfer"
